@@ -100,29 +100,6 @@ The fastest way to get started:
 4. Wait ~10-15 minutes for deployment
 5. Access the wizard URL from stack outputs
 
-### Option 2: Build Your Own AMI
-
-For custom configurations or air-gapped environments:
-
-```bash
-# Clone the repository
-git clone https://github.com/digitalis-io/ami-kube.git
-cd ami-kube
-
-# Build the AMI with Packer
-cd packer
-packer init .
-packer build kube.pkr.hcl
-
-# Deploy with CloudFormation
-cd ../cloudformation
-export AWS_VPC="vpc-xxxxxxxxx"
-export AWS_SUBNET="subnet-xxxxxxxxx"
-export AWS_AMI="ami-xxxxxxxxx"  # From Packer output
-export AWS_KEY_NAME="my-keypair"
-./deploy-stack.sh
-```
-
 ---
 
 ## 📊 Architecture
@@ -279,49 +256,6 @@ open https://pgadmin.<YOUR-IP>.nip.io
 
 ---
 
-## 📖 Documentation
-
-Detailed documentation for each component:
-
-- **[CloudFormation Deployment](cloudformation/README.md)** - Complete deployment guide
-- **[Packer AMI Building](packer/README.md)** - Custom AMI creation
-- **[Application Configuration](deploy_apps.yml)** - Ansible playbook details
-- **[Troubleshooting Guide](#-troubleshooting)** - Common issues and solutions
-
----
-
-## 🔒 Security Best Practices
-
-### Before Going to Production
-
-1. **🔐 Restrict Access**
-   ```bash
-   # Update security group to limit SSH/HTTPS to your IP
-   export ALLOWED_SSH_CIDR="YOUR.IP.ADDRESS/32"
-   export ALLOWED_HTTPS_CIDR="YOUR.NETWORK.CIDR/24"
-   ```
-
-2. **🔑 Change Default Passwords**
-   - Change Grafana admin password
-   - Rotate database passwords
-   - Update ArgoCD admin credentials
-
-3. **📜 Enable Certificate Validation**
-   - Configure cert-manager with Let's Encrypt
-   - Use valid DNS names instead of nip.io
-
-4. **💾 Backup Important Data**
-   - Regular backups of persistent volumes
-   - Export important configurations
-   - Store credentials securely (e.g., AWS Secrets Manager)
-
-5. **🔄 Enable Termination Protection**
-   ```bash
-   export TERMINATION_PROTECTION="true"
-   ```
-
----
-
 ## 💰 Cost Estimation
 
 **Monthly costs** (us-east-1 region):
@@ -357,15 +291,7 @@ ssh -i ~/.ssh/YOUR-KEY.pem ubuntu@<INSTANCE-IP>
 sudo systemctl status kube-wizard
 
 # View logs
-sudo journalctl -u kube-wizard -f
-```
-
-### Deployment Failed
-
-```bash
-# Check Ansible logs from wizard UI
-# Or SSH to instance and check:
-sudo cat /var/log/ansible-deployment.log
+sudo journalctl -u wizard -f
 ```
 
 ### Kubernetes Cluster Issues
@@ -382,34 +308,6 @@ export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 kubectl get nodes
 kubectl get pods -A
 ```
-
-### Certificate Warnings
-
-The wizard uses self-signed certificates by default. This is normal and secure for initial setup. For production:
-
-1. Configure custom domain with DNS
-2. Enable Let's Encrypt in cert-manager
-3. Update ingress to use your domain
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-# Clone repository
-git clone https://github.com/digitalis-io/ami-kube.git
-cd ami-kube
-
-# Run local development wizard
-cd ami-kube
-go run main.go
-```
-
----
 
 ## 📞 Support
 
@@ -432,25 +330,5 @@ For enterprise support, training, and consulting:
 - 🔄 Establish CI/CD pipelines
 - 🔒 Secure cloud infrastructure
 - 📈 Scale applications efficiently
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🌟 Star History
-
-If you find this project useful, please consider giving it a star ⭐!
-
----
-
-<div align="center">
-
-**Built with ❤️ by [Digitalis.io](https://digitalis.io)**
-
-[Website](https://digitalis.io) • [Blog](https://digitalis.io/blog) • [Twitter](https://twitter.com/digitalis_io) • [LinkedIn](https://linkedin.com/company/digitalis-io)
 
 </div>
